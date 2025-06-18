@@ -9,4 +9,5 @@ CACHEDIR.TAG
 *.pyc
 *.db
 *.csv
+*.txt
 .env
