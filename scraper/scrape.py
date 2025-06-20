@@ -115,7 +115,11 @@ def write_players(driver, players_links, writer):
                 print(f"No tables for {player['player_name']}")
                 continue
 
-            bio_dict = dict(parse_biography_table(tables[0]))
+            try:
+                bio_dict = dict(parse_biography_table(tables[0]))
+            except Exception as e:
+                print(f"Failed parsing bio table for {player['player_name']}: {e}")
+                continue
             bio_dict["Player Name"] = player["player_name"]
             writer.writerow(bio_dict)
             print(f"Saved: {player['player_name']}")
@@ -124,50 +128,55 @@ def write_players(driver, players_links, writer):
 
 
 # === MAIN LOOP ===
-all_links = get_all_links()
-last_link = load_last_link()
+if __name__ == "__main__":
 
-if last_link in all_links:
-    all_links = all_links[all_links.index(last_link) + 1 :]
+    all_links = get_all_links()
+    last_link = load_last_link()
 
-driver = get_driver()
-file_exists = os.path.isfile(CSV_PATH)
+    if last_link in all_links:
+        all_links = all_links[all_links.index(last_link) + 1 :]
+    try:
+        driver = get_driver()
+        file_exists = os.path.isfile(CSV_PATH)
 
-with open(CSV_PATH, mode="a", newline="", encoding="utf-8") as file:
-    writer = None
+        with open(CSV_PATH, mode="a", newline="", encoding="utf-8") as file:
+            writer = None
 
-    for i, link in enumerate(all_links):
-        try:
-            print(f"Processing {link} ({i + 1}/{len(all_links)})")
-            players = scrape_day_page(driver, link)
+            for i, link in enumerate(all_links):
+                try:
+                    print(f"Processing {link} ({i + 1}/{len(all_links)})")
+                    players = scrape_day_page(driver, link)
+                    time.sleep(WAIT_TIME)
+                    if not writer and players:
+                        driver.get(players[0]["player_url"])
+                        time.sleep(WAIT_TIME)
+                        tables = driver.find_elements(By.CSS_SELECTOR, "div.ba-table")
+                        sample_dict = dict(parse_biography_table(tables[0]))
+                        sample_dict["Player Name"] = players[0]["player_name"]
+                        writer = csv.DictWriter(
+                            file, fieldnames=list(sample_dict.keys())
+                        )
+                        if not file_exists:
+                            writer.writeheader()
 
-            if not writer and players:
-                driver.get(players[0]["player_url"])
-                time.sleep(WAIT_TIME)
-                tables = driver.find_elements(By.CSS_SELECTOR, "div.ba-table")
-                sample_dict = dict(parse_biography_table(tables[0]))
-                sample_dict["Player Name"] = players[0]["player_name"]
-                writer = csv.DictWriter(file, fieldnames=list(sample_dict.keys()))
-                if not file_exists:
-                    writer.writeheader()
+                    write_players(driver, players, writer)
+                    save_last_link(link)
 
-            write_players(driver, players, writer)
-            save_last_link(link)
+                    if (i + 1) % RESTART_EVERY_N_LINKS == 0:
+                        driver.quit()
+                        driver = get_driver()
 
-            if (i + 1) % RESTART_EVERY_N_LINKS == 0:
-                driver.quit()
-                driver = get_driver()
+                except Exception as e:
+                    print(f"Crash on {link}: {e}")
+                    # Recover from ChromeDriver crash
+                    try:
+                        driver.quit()
+                    except:
+                        pass
+                    driver = get_driver()
+                    continue
+    finally:
+        driver.quit()
+        print("Scraping complete.")
 
-        except Exception as e:
-            print(f"Crash on {link}: {e}")
-            # Recover from ChromeDriver crash
-            try:
-                driver.quit()
-            except:
-                pass
-            driver = get_driver()
-            continue
-
-driver.quit()
-print("Scraping complete.")
 # %%
