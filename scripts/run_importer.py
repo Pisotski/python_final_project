@@ -1,9 +1,21 @@
-import sys
-import os
+import logging
+from data.data_cleaner.data_cleaner import load_and_clean
+from importer.import_to_db import push_df_to_sqlite
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+logging.basicConfig(level=logging.INFO)
 
-from importer.import_to_db import push_csv_to_sqlite
+
+def main():
+    try:
+        df = load_and_clean("data/raw/players.csv")
+        push_df_to_sqlite(
+            df,
+            db_path="data/mlb_players.db",
+            table_name="players",
+        )
+    except Exception as e:
+        logging.exception("Failed to import player data")
+
 
 if __name__ == "__main__":
-    push_csv_to_sqlite(csv_path="data/raw/players.csv", db_path="data/mlb_history.db")
+    main()
