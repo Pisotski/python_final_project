@@ -8,55 +8,76 @@ def push_csv_to_sqlite(csv_path: str, db_path: str = "players.db"):
         print(f"[ERROR] File not found: {csv_path}")
         return
 
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
+    try:
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
 
-    # Create table if it doesn't exist
-    cursor.execute(
-        """
-    CREATE TABLE IF NOT EXISTS players (
-        player_name TEXT,
-        year TEXT,
-        team TEXT,
-        league TEXT,
-        position TEXT,
-        age TEXT,
-        games TEXT,
-        batting_average TEXT,
-        home_runs TEXT,
-        rbi TEXT
-    )
-    """
-    )
-
-    with open(csv_path, newline="", encoding="utf-8") as csvfile:
-        reader = csv.DictReader(csvfile)
-        rows = [
-            (
-                row.get("player_name"),
-                row.get("year"),
-                row.get("team"),
-                row.get("league"),
-                row.get("position"),
-                row.get("age"),
-                row.get("games"),
-                row.get("batting_average"),
-                row.get("home_runs"),
-                row.get("rbi"),
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS players (
+                birth_name TEXT,
+                nickname TEXT,
+                born_on TEXT,
+                born_in TEXT,
+                died_on TEXT,
+                died_in TEXT,
+                cemetery TEXT,
+                high_school TEXT,
+                college TEXT,
+                bats TEXT,
+                throws TEXT,
+                height TEXT,
+                weight TEXT,
+                first_game TEXT,
+                last_game TEXT,
+                draft TEXT,
+                player_name TEXT
             )
-            for row in reader
-        ]
-
-    cursor.executemany(
         """
-        INSERT INTO players (
-            player_name, year, team, league, position,
-            age, games, batting_average, home_runs, rbi
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """,
-        rows,
-    )
+        )
 
-    conn.commit()
-    conn.close()
-    print(f"[SUCCESS] Inserted {len(rows)} rows into '{db_path}'.")
+        with open(csv_path, newline="", encoding="utf-8") as csvfile:
+            reader = csv.DictReader(csvfile)
+            rows = [
+                (
+                    row.get("Birth Name"),
+                    row.get("Nickname"),
+                    row.get("Born On"),
+                    row.get("Born In"),
+                    row.get("Died On"),
+                    row.get("Died In"),
+                    row.get("Cemetery"),
+                    row.get("High School"),
+                    row.get("College"),
+                    row.get("Bats"),
+                    row.get("Throws"),
+                    row.get("Height"),
+                    row.get("Weight"),
+                    row.get("First Game"),
+                    row.get("Last Game"),
+                    row.get("Draft"),
+                    row.get("Player Name"),
+                )
+                for row in reader
+            ]
+
+        if not rows:
+            print(f"[WARNING] No rows found in CSV: {csv_path}")
+            return
+
+        cursor.executemany(
+            """
+            INSERT INTO players (
+                birth_name, nickname, born_on, born_in, died_on, died_in,
+                cemetery, high_school, college, bats, throws, height, weight,
+                first_game, last_game, draft, player_name
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+            rows,
+        )
+
+        conn.commit()
+        print(f"[SUCCESS] Inserted {len(rows)} rows into '{db_path}'.")
+
+    finally:
+        conn.close()
