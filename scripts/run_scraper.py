@@ -1,10 +1,7 @@
-import sys
-import os
+from scraper.scrape_history import scrape_history
+from scraper.utils.logger import setup_logger
 
-## FIXME:
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-from scraper.scrape import main
 
 if __name__ == "__main__":
-    main()
+    setup_logger()
+    scrape_history()
