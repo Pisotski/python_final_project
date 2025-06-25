@@ -1,0 +1,26 @@
+NAME_CORRECTIONS = {
+    # player_review
+    "Ty Cobb *": "Ty Cobb",
+    "BobbyVeach": "Bobby Veach",
+    "Billy North": "Bill North",
+    "Henie Manush": "Heinie Manush",
+    "Dale Alexander *": "Dale Alexander",
+    "Cal Ripken, Jr.": "Cal Ripken Jr.",
+    "DustinPedroia": "Dustin Pedroia",
+    "Adrian Beltre": "Adrián Beltré",
+    "Jose Abreu": "José Abreu",
+    "Jose Caballero": "José",
+    # pitcher_review
+    "Smoky Joe Wood": "Joe Wood",
+    "Allan Russell": "Allen Russell",
+    "Joe Bush": "Bullet Joe Bush",
+    "La Marr Hoyt": "LaMarr Hoyt",
+    "Hod Lisenbee": "Horace Lisenbee",
+    "C.C. Sabathia": "CC Sabathia",
+    "Felix Hernandez": "Felix Hernández",
+    "Anibal Sanchez": "Aníbal Sánchez",
+    "Zach Britton": "Zack Britton",
+    "Alex Colome": "Alex Colomé",
+    "Jose Berrios": "José Berríos",
+    "Lance McCullers, Jr.": "Lance McCullers Jr.",
+}
