@@ -33,6 +33,7 @@ def write_players(driver, players_links, writer):
             except Exception as e:
                 print(f"Failed parsing bio table for {player['player_name']}: {e}")
                 continue
+
             bio_dict["Player Name"] = player["player_name"]
             writer.writerow(bio_dict)
             print(f"Saved: {player['player_name']}")

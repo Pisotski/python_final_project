@@ -12,3 +12,6 @@ CACHEDIR.TAG
 *.txt
 *.log
 .env
+*.db*
+*.db-shm
+*.db-wal

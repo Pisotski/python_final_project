@@ -15,12 +15,15 @@ def scrape_history():
 
     all_links = get_all_links()
     selected_links = all_links
+
     #
     #   FOR TESTING:
     #   this will take 2 links for the head, 2 from the middle and 2 from the tails
     #   UNCOMMENT TO: double check how the entire process works. Scrapes data save to cvs's.
+    #
     #   n = len(all_links)
     #   selected_links = all_links[:2] + all_links[n // 2 - 1 : n // 2 + 1] + all_links[-2:]
+    #
 
     for year, link in selected_links:
         logging.info(f"Scraping year {year} from {link}")
